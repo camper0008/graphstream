@@ -1,6 +1,7 @@
 use crate::value::Value;
 use std::cmp::Ordering;
 
+#[allow(dead_code)]
 pub struct Positioned {
     pub positions: Vec<(Value, Value)>,
     min: Value,
@@ -17,7 +18,7 @@ fn cmp_value(lhs: Value, rhs: Value) -> Ordering {
     }
 }
 
-pub fn values_to_fractions(values: &Vec<Value>) -> Option<Positioned> {
+pub fn values_to_fractions(values: &[Value]) -> Option<Positioned> {
     let len = values.len();
     if len == 0 {
         return None;
@@ -40,11 +41,11 @@ pub fn values_to_fractions(values: &Vec<Value>) -> Option<Positioned> {
         if min == max {
             return (x, 0.5);
         }
-        return (x, (value - min) / (max - min));
+        (x, (value - min) / (max - min))
     }
 
     let positions = values
-        .into_iter()
+        .iter()
         .enumerate()
         .map(|(idx, &value)| position(value, idx, len, min, max))
         .collect();

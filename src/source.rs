@@ -1,4 +1,4 @@
-use std::io::{BufRead, Write};
+use std::io::{BufRead, IsTerminal, Write};
 
 use crate::value::Value;
 
@@ -9,27 +9,38 @@ pub trait Source {
 pub struct Stdin;
 
 impl Stdin {
-    fn value_from_stdin() -> Result<Value, &'static str> {
+    fn value_from_stdin(&mut self) -> Result<Value, String> {
         let mut buffer = String::new();
-        std::io::stdin()
+        let bytes_taken = std::io::stdin()
             .lock()
             .read_line(&mut buffer)
-            .map_err(|_| "io error while reading from stdin")?;
-        buffer.trim().parse().map_err(|_| "invalid value given")
+            .map_err(|err| format!("io error while reading from stdin: {err}"))?;
+        if bytes_taken == 0 {
+            std::thread::park();
+            return Err(String::from("reached EOF"));
+        }
+        buffer
+            .trim()
+            .parse()
+            .map_err(|_| format!("'{buffer}' is not a valid number"))
     }
 }
 
 impl Source for Stdin {
     fn next(&mut self) -> Option<Value> {
-        println!("enter value:");
-        print!("> ");
-        std::io::stdout().lock().flush().unwrap();
-        match Self::value_from_stdin() {
+        let is_tty = std::io::stdin().is_terminal();
+        if is_tty {
+            println!("enter value:");
+            print!("> ");
+            std::io::stdout().lock().flush().unwrap();
+        }
+        match self.value_from_stdin() {
             Ok(v) => Some(v),
-            Err(err) => {
+            Err(err) if is_tty => {
                 println!("error: {err}");
-                return None;
+                None
             }
+            Err(_) => None,
         }
     }
 }
