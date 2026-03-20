@@ -21,7 +21,7 @@ will make a graph with 3 lines and 2 x slots on the x axis
 
 ## colors
 
-you can specify colors for the different lines in the argument. it is in the format of `r,g,b;r,g,b`
+you can specify colors for the different lines in the argument. it is in the format of `<color>;<color>`. colors are specified as `r,g,b` or `#abcdef` or `#abc`
 
 i.e. `graphstream 255,0,0;255,255,0;0,0,255` will make the aforementioned 3 lines red, orange and blue
 

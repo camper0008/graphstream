@@ -24,6 +24,20 @@ fn color_from_string(text: &str) -> Color {
     if text.len() == 0 {
         return Color::RGB(255,0,0);
     }
+    if let Some(text) = text.strip_prefix("#") {
+        if text.len() != 3 && text.len() != 6 {
+            panic!("invalid hex '#{text}'");
+        }
+        let text = if text.len() == 3 {
+            text.chars().map(|x| format!("{x}{x}")).collect::<String>()
+        } else { 
+            text.to_string()
+        };
+        let r = u8::from_str_radix(&text[0..2], 16).unwrap();
+        let g = u8::from_str_radix(&text[2..4], 16).unwrap();
+        let b = u8::from_str_radix(&text[4..6], 16).unwrap();
+        return Color::RGB(r,g,b);
+    }
     let [r, g, b]: [u8; 3] = text
         .split(',')
         .map(|x| x.parse().unwrap())
@@ -77,10 +91,11 @@ pub fn main() -> Result<(), String> {
                 Point::new(x as i32, y as i32)
             }
 
+            let draw_points = values.len() < 25;
             for (x, y_points) in values {
-                for (ydx, y) in y_points.iter().enumerate() {
+                for (y_idx, y) in y_points.iter().enumerate() {
                     let color = colors
-                        .get(ydx)
+                        .get(y_idx)
                         .map(|x| x.to_owned())
                         .unwrap_or_else(|| Color::RGB(255, 0, 0));
                     canvas.set_draw_color(color);
@@ -90,20 +105,22 @@ pub fn main() -> Result<(), String> {
                     let height = size.1 as f64 - offset * 2.0;
 
                     let radius = 4.0;
-                    let xp1 = offset + width * x - radius / 2.0;
-                    let yp1 = offset + height * y - radius / 2.0;
                     if let Some(last) = last.as_ref() {
                         canvas.draw_line(
                             point(offset + width * x, offset + height * y),
-                            point(offset + width * last.0, offset + height * last.1[ydx]),
+                            point(offset + width * last.0, offset + height * last.1[y_idx]),
                         )?;
                     }
-                    canvas.fill_rect(Rect::new(
-                        xp1 as i32,
-                        yp1 as i32,
-                        radius as u32,
-                        radius as u32,
-                    ))?;
+                    if draw_points {
+                        let x = offset + width * x - radius / 2.0;
+                        let y = offset + height * y - radius / 2.0;
+                        canvas.fill_rect(Rect::new(
+                            x as i32,
+                            y as i32,
+                            radius as u32,
+                            radius as u32,
+                        ))?;
+                    }
                 }
                 last = Some((x, y_points))
             }
