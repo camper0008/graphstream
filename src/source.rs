@@ -1,15 +1,13 @@
 use std::io::{BufRead, IsTerminal, Write};
 
-use crate::value::Value;
-
 pub trait Source {
-    fn next(&mut self) -> Option<Value>;
+    fn next(&mut self) -> Option<Vec<f64>>;
 }
 
 pub struct Stdin;
 
 impl Stdin {
-    fn value_from_stdin(&mut self) -> Result<Value, String> {
+    fn value_from_stdin(&mut self) -> Result<Vec<f64>, String> {
         let mut buffer = String::new();
         let bytes_taken = std::io::stdin()
             .lock()
@@ -21,13 +19,17 @@ impl Stdin {
         }
         buffer
             .trim()
-            .parse()
-            .map_err(|_| format!("'{buffer}' is not a valid number"))
+            .split(';')
+            .map(|x| {
+                x.parse()
+                    .map_err(|_| format!("'{x}' is not a valid number"))
+            })
+            .collect::<Result<_, _>>()
     }
 }
 
 impl Source for Stdin {
-    fn next(&mut self) -> Option<Value> {
+    fn next(&mut self) -> Option<Vec<f64>> {
         let is_tty = std::io::stdin().is_terminal();
         if is_tty {
             println!("enter value:");

@@ -1,14 +1,6 @@
-use crate::value::Value;
 use std::cmp::Ordering;
 
-#[allow(dead_code)]
-pub struct Positioned {
-    pub positions: Vec<(Value, Value)>,
-    min: Value,
-    max: Value,
-}
-
-fn cmp_value(lhs: Value, rhs: Value) -> Ordering {
+fn cmp_value(lhs: f64, rhs: f64) -> Ordering {
     if lhs == rhs {
         Ordering::Equal
     } else if lhs > rhs {
@@ -18,40 +10,42 @@ fn cmp_value(lhs: Value, rhs: Value) -> Ordering {
     }
 }
 
-pub fn values_to_fractions(values: &[Value]) -> Option<Positioned> {
+fn position(values: &Vec<f64>, idx: usize, len: usize, min: f64, max: f64) -> (f64, Vec<f64>) {
+    let x = if len == 1 {
+        0.5
+    } else {
+        idx as f64 / (len - 1) as f64
+    };
+    if min == max {
+        return (x, values.iter().map(|_| 0.5).collect());
+    }
+    let y = values
+        .iter()
+        .map(|value| (value - min) / (max - min))
+        .collect();
+    (x, y)
+}
+
+pub fn values_to_fractions(values: &Vec<Vec<f64>>) -> Option<Vec<(f64, Vec<f64>)>> {
     let len = values.len();
     if len == 0 {
         return None;
     }
     let max = *values
         .iter()
+        .flatten()
         .max_by(|lhs, rhs| cmp_value(**lhs, **rhs))
-        .expect("asserted len >= 1");
+        .expect("asserted len > 0");
     let min = *values
         .iter()
+        .flatten()
         .min_by(|lhs, rhs| cmp_value(**lhs, **rhs))
-        .expect("asserted len >= 1");
+        .expect("asserted len > 0");
 
-    fn position(value: Value, idx: usize, len: usize, min: Value, max: Value) -> (Value, Value) {
-        let x = if len == 1 {
-            0.5
-        } else {
-            idx as Value / (len - 1) as Value
-        };
-        if min == max {
-            return (x, 0.5);
-        }
-        (x, (value - min) / (max - min))
-    }
-
-    let positions = values
+    let instructions = values
         .iter()
         .enumerate()
-        .map(|(idx, &value)| position(value, idx, len, min, max))
+        .map(|(idx, values)| position(values, idx, len, min, max))
         .collect();
-    Some(Positioned {
-        positions,
-        min,
-        max,
-    })
+    Some(instructions)
 }
