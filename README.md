@@ -25,4 +25,4 @@ you can specify colors for the different lines in the argument. it is in the for
 
 i.e. `graphstream 255,0,0;255,255,0;0,0,255` will make the aforementioned 3 lines red, orange and blue
 
-if no color is specified, defaults to red
+a list of default colors are specified. if a dataset does not have a user-specified color, it defaults to `default_colors[<line index> % <default colors length>]`

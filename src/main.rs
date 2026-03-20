@@ -20,9 +20,10 @@ fn input_thread(
     });
 }
 
-fn color_from_string(text: &str) -> Color {
+fn color_from_string<T: AsRef<str>>(text: T) -> Color {
+    let text = text.as_ref();
     if text.len() == 0 {
-        return Color::RGB(255,0,0);
+        unreachable!("filtered empty strings");
     }
     if let Some(text) = text.strip_prefix("#") {
         if text.len() != 3 && text.len() != 6 {
@@ -30,13 +31,13 @@ fn color_from_string(text: &str) -> Color {
         }
         let text = if text.len() == 3 {
             text.chars().map(|x| format!("{x}{x}")).collect::<String>()
-        } else { 
+        } else {
             text.to_string()
         };
         let r = u8::from_str_radix(&text[0..2], 16).unwrap();
         let g = u8::from_str_radix(&text[2..4], 16).unwrap();
         let b = u8::from_str_radix(&text[4..6], 16).unwrap();
-        return Color::RGB(r,g,b);
+        return Color::RGB(r, g, b);
     }
     let [r, g, b]: [u8; 3] = text
         .split(',')
@@ -58,8 +59,17 @@ pub fn main() -> Result<(), String> {
         .build()
         .unwrap();
 
+    let default_colors = [
+        "#44CF6C", "#21823D", "#593F62", "#A483AF", "#B80000", "#FF4747", "#1C6E8C", "#44B2DA",
+    ]
+    .map(color_from_string);
+
     let args = std::env::args().nth(1).unwrap_or_else(|| String::new());
-    let colors: Vec<_> = args.split(';').map(color_from_string).collect();
+    let colors: Vec<_> = args
+        .split(';')
+        .filter(|x| x.trim() != "")
+        .map(color_from_string)
+        .collect();
 
     let mut canvas = window.into_canvas().build().unwrap();
 
@@ -97,7 +107,7 @@ pub fn main() -> Result<(), String> {
                     let color = colors
                         .get(y_idx)
                         .map(|x| x.to_owned())
-                        .unwrap_or_else(|| Color::RGB(255, 0, 0));
+                        .unwrap_or_else(|| default_colors[y_idx % default_colors.len()]);
                     canvas.set_draw_color(color);
                     let offset = 50.0;
                     let size = canvas.output_size()?;
