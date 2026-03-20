@@ -8,7 +8,7 @@ use `cargo install --git`
 
 ## input
 
-each line is an item on the x axis, semicolons describe different lines
+each line is a "step" on the time scale (x axis), with a value (y axis). semicolons differentiate between different data sets. i.e. `<humidity>;<temperature>`
 
 example input: 
 
@@ -17,7 +17,7 @@ example input:
 57.2;-50.3;22
 ```
 
-will make a graph with 3 lines and 2 x slots on the x axis
+will make a graph with 3 lines and 2 steps on the x axis
 
 ## colors
 
