@@ -60,7 +60,7 @@ pub fn main() -> Result<(), String> {
         .unwrap();
 
     let default_colors = [
-        "#44CF6C", "#21823D", "#593F62", "#A483AF", "#B80000", "#FF4747", "#1C6E8C", "#44B2DA",
+        "#ff0000", "#ff6000", "#ffbf00", "#27a246", "#00ffff", "#2279ae",
     ]
     .map(color_from_string);
 
@@ -114,7 +114,7 @@ pub fn main() -> Result<(), String> {
                     let width = size.0 as f64 - offset * 2.0;
                     let height = size.1 as f64 - offset * 2.0;
 
-                    let radius = 4.0;
+                    let radius = 30.0;
                     if let Some(last) = last.as_ref() {
                         canvas.draw_line(
                             point(offset + width * x, offset + height * y),
