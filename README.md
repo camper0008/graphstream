@@ -6,11 +6,11 @@ take a stdin stream and make a graph
 
 ### random input
 
-[random](/docs/random.png)
+![random](/docs/random.png)
 
 ### f(x) input
 
-[random](/docs/random.png)
+![functions](/docs/functions.png)
 
 ## install
 
