@@ -114,7 +114,7 @@ pub fn main() -> Result<(), String> {
                     let width = size.0 as f64 - offset * 2.0;
                     let height = size.1 as f64 - offset * 2.0;
 
-                    let radius = 30.0;
+                    let radius = 4.0;
                     if let Some(last) = last.as_ref() {
                         canvas.draw_line(
                             point(offset + width * x, offset + height * y),

@@ -2,15 +2,27 @@
 
 take a stdin stream and make a graph
 
+## example
+
+### random input
+
+[random](/docs/random.png)
+
+### f(x) input
+
+[random](/docs/random.png)
+
 ## install
 
 use `cargo install --git`
 
 ## input
 
-each line is a "step" on the time scale (x axis), with a value (y axis). semicolons differentiate between different data sets. i.e. `<humidity>;<temperature>`
+each line is a "step" on the time scale (x axis), with a value (y axis).
+semicolons differentiate between different data sets. i.e.
+`<humidity>;<temperature>`
 
-example input: 
+example input:
 
 ```
 10;20.3;47
@@ -21,8 +33,13 @@ will make a graph with 3 lines and 2 steps on the x axis
 
 ## colors
 
-you can specify colors for the different lines in the argument. it is in the format of `<color>;<color>`. colors are specified as `r,g,b` or `#abcdef` or `#abc`
+you can specify colors for the different lines in the argument. it is in the
+format of `<color>;<color>`. colors are specified as `r,g,b` or `#abcdef` or
+`#abc`
 
-i.e. `graphstream 255,0,0;255,255,0;0,0,255` will make the aforementioned 3 lines red, orange and blue
+i.e. `graphstream 255,0,0;255,255,0;0,0,255` will make the aforementioned 3
+lines red, orange and blue
 
-a list of default colors are specified. if a dataset does not have a user-specified color, it defaults to `default_colors[<line index> % <default colors length>]`
+a list of default colors are specified. if a dataset does not have a
+user-specified color, it defaults to
+`default_colors[<line index> % <default colors length>]`
